@@ -176,7 +176,10 @@ class IndirectObject(PdfObject):
         self.pdf = pdf
 
     def getObject(self):
-        return self.pdf.getObject(self).getObject()
+        obj = self.pdf.getObject(self)
+        if obj:
+            return obj.getObject()
+        return {}
 
     def __repr__(self):
         return "IndirectObject(%r, %r)" % (self.idnum, self.generation)
@@ -355,7 +358,7 @@ def readStringFromStream(stream):
                            b_("%") : b_("%"),
                            b_("<") : b_("<"),
                            b_(">") : b_(">"),
-                           b_("[") : b_("["), 
+                           b_("[") : b_("["),
                            b_("]") : b_("]"),
                            b_("#") : b_("#"),
                            b_("_") : b_("_"),
@@ -479,7 +482,7 @@ class NameObject(str, PdfObject):
         name = stream.read(1)
         if name != NameObject.surfix:
             raise utils.PdfReadError("name read error")
-        name += utils.readUntilRegex(stream, NameObject.delimiterPattern, 
+        name += utils.readUntilRegex(stream, NameObject.delimiterPattern,
             ignore_eof=True)
         if debug: print(name)
         try:
